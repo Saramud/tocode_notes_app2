@@ -1,6 +1,6 @@
 <template>
     <div class="message">
-    <p>Message Componets - {{test}}</p>
+    <p>Message Componets - {{msg}}</p>
     </div>
 </template>
 

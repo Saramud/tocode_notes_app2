@@ -1,9 +1,10 @@
 <template>
     <div class="notes">
-        <div class="note" :class="{ full : !grid }"  :style = "{ backgroundColor: (note.color) ? col = note.color : col = 'white' }" v-for="(note, index) in notes" :key="index">
-            <div class="note-header">  <!--color: (note.class) ? col = true: col = false -->
+        <div class="note" :class="{ full : !grid }"  :style = "{ backgroundColor: (note.color) ? col = 
+        note.color : col = 'white' }" v-for="(note, index) in notes" :key="index">
+            <div class="note-header"> 
                 <p> {{ note.title }} </p>
-                <p style= "cursor: pointer" @click='rem(index)'>x</p>
+                <p style= "cursor: pointer" @click='remove(index)'>x</p>
             </div>
             <div class="note-body">
                 <p> {{ note.descr }}</p>
@@ -16,10 +17,6 @@
 <script>
 export default {
     props: {
-        notes: {
-            type: Array,
-            required: true
-        },
         grid: {
             type: Boolean,
             required: true
@@ -28,12 +25,16 @@ export default {
     data () {
         return {
         col: '',
+        notes: null,
         }
     },
     methods: {
-        rem(index) {
-            this.$emit('remove', index);
+        remove(index){
+        this.$store.dispatch('REMOVE_NOTE', index);
         }
+    },
+    created() {
+        this.notes = this.$store.getters.GET_NOTE;
     },
 }
 </script>

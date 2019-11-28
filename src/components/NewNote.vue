@@ -1,15 +1,12 @@
 <template>
     <div class="new-note">
-        <label>Title</label>
-        
-        <input type="text" v-model="note.title">
-        <div class="prioritets">
-            <input id='one' class='prt' type='radio' name='prioritet' value='white' v-model='checked'>
-            <label for='one'>Standart note</label>
-            <input id ='two' class='prt' type='radio' name='prioritet' value='yellow' v-model='checked'>
-            <label for='two'>Imporant note</label>
-            <input id='three' class='prt' type='radio' name='prioritet' value='red' v-model='checked'>
-            <label for='three'>MustHave note</label>
+        <label>Title {{message}}</label>
+        <input type='text' v-model='note.title'>
+        <div class="prioritets" >
+            <label  v-for='(item, index) in priority' :class="{ checked: (item.value === checkColor) ? check = true: check = false }" :key='index' >
+                {{item.title}} 
+                <input type='radio' :class='{ prt:inputHidden }' v-model='checkColor' :value='item.value' >
+            </label>
         </div>
         <label>Description</label>
         <textarea v-model="note.descr"></textarea>
@@ -19,29 +16,52 @@
 
 <script>
 export default {
-props: {
-    note: {
-        type: Object,
-        required: true,
-    },
-    standart: {
-        type: String,
-        required: true,
+data() {
+    return {
+            title: 'Notes App',
+            note: {
+                title: '',
+                descr: '',
+            },
+            message: '',
+            inputHidden: true, 
+            check: false,
+            checkColor: '',
+            boxShadow: '0 0 10px rgba(0,0,0,0.5)',
+    
     }
 },
-data () {
-return { checked: this.standart }
-},
-methods: {
-addNote() {
-    this.$emit('addnote', this.note);
-}
-},
-watch: { 
-    checked(value) {
-    this.$emit('priority', value);
+computed: {
+    classObject: function () {
+        return {
+        active: this.isActive && !this.error,
+        'text-danger': this.error && this.error.type === 'fatal'
         }
     }
+},
+methods: {
+    addNote() {
+                let {title, descr} = this.note;
+                if (title === '') {
+                    this.message = "title can't be blank";
+                    return false;
+                }
+                this.$store.dispatch('ADD_NOTE', {
+                    title,
+                    descr,
+                    date: new Date(Date.now()).toLocaleString(),
+                    color: this.checkColor,
+                });
+                this.note.title ='';
+                this.note.descr = '';
+                this.message = null;
+                this.checkColor = 'white'
+            },
+    
+},
+created() {
+        this.priority = this.$store.getters.GET_PRIORITY;
+    },
 }
 </script>
 
@@ -64,7 +84,7 @@ watch: {
     :hover:last-child{
         background-color: red;
     }
-    :hover:nth-child(4) {
+    :hover:nth-child(2) {
         background-color: yellow;
     }
     
@@ -82,14 +102,14 @@ watch: {
     
 }
 }
-:hover[value='important'] {
-        background-color: red;
-    }
-
 .prt {
     display: none;
 }
-input[type='radio']:checked + label {
+.checked{
     box-shadow:0 0 10px rgba(0,0,0,0.5);
     }
+
+input[type='radio']:checked + #x {
+box-shadow:0 0 10px rgba(0,0,0,0.5);
+}
 </style>
